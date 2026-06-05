@@ -1,0 +1,18 @@
+# Local/generated files
+.DS_Store
+Thumbs.db
+*.log
+*.zip
+
+# Exported 3D/map outputs
+exports/
+*.glb
+*.gltf
+*.obj
+*.fbx
+*.json.tmp
+
+# Optional local data cache
+cache/
+tmp/
+data/*.cache
