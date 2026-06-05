@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PZ Map3D loader</title>
+  <style>
+    body{margin:0;background:#05070a;color:#eef3f8;font-family:system-ui,Segoe UI,Arial,sans-serif;display:grid;place-items:center;min-height:100vh}
+    main{max-width:760px;padding:28px;border:1px solid #26323f;background:#0b1117}
+    code{background:#071018;padding:2px 6px;border-radius:4px}
+  </style>
+</head>
+<body>
+<main id="status">
+  <h1>PZ Map3D</h1>
+  <p>Loading MAP3D.ZIP…</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script>
+(async()=>{
+  const status=document.getElementById('status');
+  const candidates=['../MAP3D.ZIP','../MAP3D.zip','MAP3D.ZIP','MAP3D.zip'];
+  let zipBuffer=null, used=null;
+  for(const url of candidates){
+    try{
+      const r=await fetch(url,{cache:'no-store'});
+      if(r.ok){ zipBuffer=await r.arrayBuffer(); used=url; break; }
+    }catch(e){}
+  }
+  if(!zipBuffer){
+    status.innerHTML='<h1>PZ Map3D</h1><p>ZIP file was not found. Upload <code>MAP3D.ZIP</code> to the repository root or upload the extracted files from <code>MAP3D/3dmap/</code>.</p>';
+    return;
+  }
+  status.innerHTML='<h1>PZ Map3D</h1><p>Unpacking '+used+'…</p>';
+  const zip=await JSZip.loadAsync(zipBuffer);
+  const file=zip.file('MAP3D/3dmap/index.html') || zip.file('3dmap/index.html') || zip.file('index.html');
+  if(!file){
+    status.innerHTML='<h1>PZ Map3D</h1><p>ZIP loaded, but <code>MAP3D/3dmap/index.html</code> was not found.</p>';
+    return;
+  }
+  const html=await file.async('string');
+  document.open();
+  document.write(html);
+  document.close();
+})().catch(e=>{
+  document.getElementById('status').innerHTML='<h1>PZ Map3D</h1><p>Loader error: '+String(e.message||e)+'</p>';
+});
+</script>
+</body>
+</html>
